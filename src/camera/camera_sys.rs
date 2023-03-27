@@ -61,8 +61,7 @@ pub fn orbit_gamepad(
 
     let mut rotation = Vec2::ZERO;
     if let (Some(x), Some(y)) = (axis.get(x_axis), axis.get(y_axis)) {
-        let dead_zone = 0.5;
-        if x.abs() > dead_zone || y.abs() > dead_zone {
+        if x.abs() > gamepad.deadzone || y.abs() > gamepad.deadzone {
             rotation = Vec2::new(x, y);
         }
     }
