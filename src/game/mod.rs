@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 mod camera;
 mod game_sys;
-mod gamepad;
+pub mod gamepad;
 mod player;
 mod world;
 

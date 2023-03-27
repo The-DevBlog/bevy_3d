@@ -138,3 +138,9 @@ pub fn gamepad_movement(
         transform.translation += speed.0 * direction * time.delta_seconds();
     }
 }
+
+pub fn despawn(mut cmds: Commands, player_q: Query<Entity, With<Player>>) {
+    if let Ok(entity) = player_q.get_single() {
+        cmds.entity(entity).despawn_recursive();
+    }
+}

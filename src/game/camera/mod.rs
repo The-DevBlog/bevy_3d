@@ -3,11 +3,9 @@ use bevy::prelude::*;
 pub mod camera_cmps;
 mod camera_sys;
 
-use camera_sys::*;
-
-use crate::AppState;
-
 use super::GameState;
+use crate::AppState;
+use camera_sys::*;
 
 pub struct CameraPlugin;
 
