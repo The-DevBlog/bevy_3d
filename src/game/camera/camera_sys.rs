@@ -66,7 +66,6 @@ pub fn orbit_gamepad(
         }
     }
 
-    // let rotation_speed = 5.0;
     for (cam, mut transform) in cam_q.iter_mut() {
         if rotation.length_squared() > 0.0 {
             let window = window_q.get_single().unwrap();

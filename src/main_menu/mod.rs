@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
-pub struct SystemsPlugin;
+pub struct MainMenuPlugin;
 
-impl Plugin for SystemsPlugin {
+impl Plugin for MainMenuPlugin {
     fn build(&self, app: &mut App) {}
 }
