@@ -1,8 +1,8 @@
 use bevy::prelude::*;
 
 use super::player_cmps::{Player, Speed};
-use crate::camera::camera_cmps::OrbitCamera;
-use crate::gamepad::gamepad_rcs::MyGamepad;
+use crate::game::camera::camera_cmps::OrbitCamera;
+use crate::game::gamepad::gamepad_rcs::MyGamepad;
 
 pub fn spawn(
     mut cmds: Commands,

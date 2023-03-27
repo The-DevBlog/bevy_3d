@@ -6,7 +6,7 @@ use bevy::{
 };
 
 use super::camera_cmps::OrbitCamera;
-use crate::gamepad::gamepad_rcs::MyGamepad;
+use crate::game::gamepad::gamepad_rcs::MyGamepad;
 
 // heavily referenced https://bevy-cheatbook.github.io/cookbook/pan-orbit-camera.html
 pub fn orbit_mouse(
@@ -129,13 +129,9 @@ pub fn zoom_gamepad(
 
             // zoom out
             if btns.pressed(d_pad_down) {
-                println!("Zoom out");
                 cam.radius += cam.radius * 0.01;
-
-                // zoom in
+            // zoom in
             } else if btns.pressed(d_pad_up) {
-                println!("Zoom in");
-
                 cam.radius -= cam.radius * 0.01;
             }
         }
