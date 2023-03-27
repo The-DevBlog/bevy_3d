@@ -1,12 +1,12 @@
 use bevy::{
+    input::gamepad::GamepadButtonType::*,
     input::mouse::{MouseMotion, MouseWheel},
     prelude::*,
     window::PrimaryWindow,
 };
 
-use crate::gamepad::gamepad_rcs::MyGamepad;
-
 use super::camera_cmps::OrbitCamera;
+use crate::gamepad::gamepad_rcs::MyGamepad;
 
 // heavily referenced https://bevy-cheatbook.github.io/cookbook/pan-orbit-camera.html
 pub fn orbit_mouse(
@@ -110,6 +110,38 @@ pub fn zoom_mouse(
     if let Ok(mut cam) = cam_q.get_single_mut() {
         if scroll.abs() > 0.0 {
             cam.radius -= scroll * cam.radius * 0.1;
+        }
+    }
+}
+
+pub fn zoom_gamepad(
+    btns: Res<Input<GamepadButton>>,
+    my_gamepad: Option<Res<MyGamepad>>,
+    mut cam_q: Query<&mut OrbitCamera, With<OrbitCamera>>,
+) {
+    let gamepad = if let Some(gp) = my_gamepad {
+        gp.gamepad
+    } else {
+        return;
+    };
+
+    if let Ok(mut cam) = cam_q.get_single_mut() {
+        let right_thumb = GamepadButton::new(gamepad, RightThumb);
+        if btns.pressed(right_thumb) {
+            let d_pad_down = GamepadButton::new(gamepad, DPadDown);
+            let d_pad_up = GamepadButton::new(gamepad, DPadUp);
+
+            // zoom out
+            if btns.pressed(d_pad_down) {
+                println!("Zoom out");
+                cam.radius += cam.radius * 0.01;
+
+                // zoom in
+            } else if btns.pressed(d_pad_up) {
+                println!("Zoom in");
+
+                cam.radius -= cam.radius * 0.01;
+            }
         }
     }
 }
