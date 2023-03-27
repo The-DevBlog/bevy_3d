@@ -49,25 +49,22 @@ pub fn orbit_gamepad(
     my_gamepad: Option<Res<MyGamepad>>,
 ) {
     // return gamepad if one is connected
-    let my_gamepad = if let Some(gp) = my_gamepad {
+    let gamepad = if let Some(gp) = my_gamepad {
         gp
     } else {
         return;
     };
 
     // get X & Y axis of right joystick
-    let x_axis = GamepadAxis {
-        axis_type: GamepadAxisType::RightStickX,
-        gamepad: my_gamepad.gamepad,
-    };
-    let y_axis = GamepadAxis {
-        axis_type: GamepadAxisType::RightStickY,
-        gamepad: my_gamepad.gamepad,
-    };
+    let x_axis = GamepadAxis::new(gamepad.gamepad, GamepadAxisType::RightStickX);
+    let y_axis = GamepadAxis::new(gamepad.gamepad, GamepadAxisType::RightStickY);
 
     let mut rotation = Vec2::ZERO;
     if let (Some(x), Some(y)) = (axis.get(x_axis), axis.get(y_axis)) {
-        rotation = Vec2::new(x, y);
+        let dead_zone = 0.5;
+        if x.abs() > dead_zone || y.abs() > dead_zone {
+            rotation = Vec2::new(x, y);
+        }
     }
 
     // let rotation_speed = 5.0;
@@ -78,7 +75,7 @@ pub fn orbit_gamepad(
                 let delta = rotation.x / window.width()
                     * std::f32::consts::PI
                     * 2.0
-                    * my_gamepad.sensitivity;
+                    * gamepad.sensitivity.0;
                 if cam.upside_down {
                     -delta
                 } else {
@@ -86,7 +83,7 @@ pub fn orbit_gamepad(
                 }
             };
             let delta_y =
-                -rotation.y / window.height() * std::f32::consts::PI * my_gamepad.sensitivity;
+                -rotation.y / window.height() * std::f32::consts::PI * gamepad.sensitivity.1;
             let yaw = Quat::from_rotation_y(-delta_x);
             let pitch = Quat::from_rotation_x(-delta_y);
             transform.rotation = yaw * transform.rotation; // rotate around global y axis
