@@ -3,12 +3,14 @@ use bevy::prelude::*;
 mod camera;
 mod game_sys;
 pub mod gamepad;
+mod pause_menu;
 mod player;
 mod world;
 
 use camera::CameraPlugin;
 use game_sys::*;
 use gamepad::GamepadPlugin;
+use pause_menu::PauseMenuPlugin;
 use player::PlayerPlugin;
 use world::WorldPlugin;
 
@@ -19,6 +21,7 @@ pub struct GamePlugin;
 impl Plugin for GamePlugin {
     fn build(&self, app: &mut App) {
         app.add_state::<GameState>()
+            .add_plugin(PauseMenuPlugin)
             .add_plugin(CameraPlugin)
             .add_plugin(WorldPlugin)
             .add_plugin(PlayerPlugin)
@@ -29,7 +32,7 @@ impl Plugin for GamePlugin {
 
 #[derive(States, Debug, Clone, Copy, Eq, PartialEq, Hash, Default)]
 pub enum GameState {
-    Running,
     #[default]
+    Running,
     Paused,
 }

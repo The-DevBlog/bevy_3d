@@ -18,11 +18,11 @@ pub fn toggle_game_state(
     if keys_input || gamepad_input {
         if game_state.0 == GameState::Running {
             cmds.insert_resource(NextState(Some(GameState::Paused)));
-            println!("GameState: Paused");
+            // println!("GameState: Paused");
         }
         if game_state.0 == GameState::Paused {
             cmds.insert_resource(NextState(Some(GameState::Running)));
-            println!("GameState: Running");
+            // println!("GameState: Running");
         }
     }
 }

@@ -23,8 +23,7 @@ pub fn to_main_menu_state(
     if gamepad_input || keys_input {
         if app_state.0 != AppState::MainMenu {
             cmds.insert_resource(NextState(Some(AppState::MainMenu)));
-            cmds.insert_resource(NextState(Some(GameState::Paused)));
-            println!("AppState: Main Menu");
+            cmds.insert_resource(NextState(Some(GameState::Running)));
         }
     }
 }
@@ -45,7 +44,6 @@ pub fn to_game_state(
     if gamepad_input || keys_input {
         if app_state.0 != AppState::Game {
             cmds.insert_resource(NextState(Some(AppState::Game)));
-            println!("AppState: Game")
         }
     }
 }
@@ -81,7 +79,6 @@ pub fn spawn(mut cmds: Commands, assets: Res<AssetServer>) {
                     background_color: Color::GRAY.into(),
                     ..default()
                 },
-                // CustomBtn,
                 Name::new("Play Button"),
             ))
             .with_children(|parent| {
@@ -105,7 +102,7 @@ pub fn select(mut cmds: Commands, mut interact_q: Query<&Interaction, With<Butto
     for interaction in &mut interact_q {
         match *interaction {
             Interaction::Clicked => cmds.insert_resource(NextState(Some(AppState::Game))),
-            Interaction::Hovered => println!("HOVERING"),
+            Interaction::Hovered => (),
             _ => (),
         }
     }
