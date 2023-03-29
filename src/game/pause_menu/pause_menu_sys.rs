@@ -1,22 +1,14 @@
 use bevy::prelude::*;
 
 use super::pause_menu_cmps::{ExitBtn, PauseMenu, ResumeBtn};
-use crate::{game::GameState, AppState};
+use crate::{
+    game::{gamepad::gamepad_rcs::MyGamepad, GameState},
+    AppState,
+};
 
 pub fn spawn(mut cmds: Commands, assets: Res<AssetServer>) {
-    let menu = (
+    let menu_container = (
         NodeBundle {
-            style: Style {
-                align_items: AlignItems::Center,
-                align_self: AlignSelf::Center,
-                flex_direction: FlexDirection::Column,
-                position: UiRect {
-                    left: Val::Percent(30.0),
-                    ..default()
-                },
-                size: Size::new(Val::Percent(40.0), Val::Percent(60.0)),
-                ..default()
-            },
             background_color: Color::Rgba {
                 red: 0.22,
                 green: 0.25,
@@ -24,108 +16,79 @@ pub fn spawn(mut cmds: Commands, assets: Res<AssetServer>) {
                 alpha: 0.95,
             }
             .into(),
+            style: Style {
+                align_items: AlignItems::Center,
+                align_self: AlignSelf::Center,
+                flex_direction: FlexDirection::Column,
+                gap: Size::height(Val::Percent(15.0)),
+                position: UiRect::left(Val::Percent(30.0)),
+                padding: UiRect::all(Val::Px(20.0)),
+                size: Size::new(Val::Percent(40.0), Val::Percent(60.0)),
+                ..default()
+            },
             ..default()
         },
         PauseMenu,
         Name::new("Pause Menu"),
     );
 
-    let menu_txt = (
-        TextBundle::from_section(
-            "Paused",
-            TextStyle {
-                color: Color::WHITE,
-                font: assets.load("fonts/ZillaSlab-Medium.ttf"),
-                font_size: 40.0,
+    let btn = |name: &str| -> (ButtonBundle, Name) {
+        (
+            ButtonBundle {
+                style: Style {
+                    size: Size::new(Val::Px(150.0), Val::Px(60.0)),
+                    justify_content: JustifyContent::Center,
+                    align_items: AlignItems::Center,
+                    ..default()
+                },
+
+                background_color: Color::GRAY.into(),
                 ..default()
             },
-        ),
-        Name::new("Paused Text"),
-    );
+            Name::new(name.to_string()),
+        )
+    };
 
-    let resume_btn = (
-        ButtonBundle {
-            style: Style {
-                size: Size::new(Val::Px(150.0), Val::Px(75.0)),
-                justify_content: JustifyContent::Center,
-                align_items: AlignItems::Center,
-                ..default()
-            },
-
-            background_color: Color::GRAY.into(),
-            ..default()
-        },
-        ResumeBtn,
-        Name::new("Resume Button"),
-    );
-
-    let resume_txt = (
-        TextBundle::from_section(
-            "Resume - Start",
-            TextStyle {
-                color: Color::WHITE,
-                font: assets.load("fonts/ZillaSlab-Medium.ttf"),
-                font_size: 25.0,
-                ..default()
-            },
-        ),
-        Name::new("Resume Text"),
-    );
-
-    let exit_btn = (
-        ButtonBundle {
-            style: Style {
-                size: Size::new(Val::Px(150.0), Val::Px(75.0)),
-                justify_content: JustifyContent::Center,
-                align_items: AlignItems::Center,
-                ..default()
-            },
-
-            background_color: Color::GRAY.into(),
-            ..default()
-        },
-        ExitBtn,
-        Name::new("Exit Button"),
-    );
-
-    let exit_txt = (
-        TextBundle::from_section(
-            "Exit - X",
-            TextStyle {
-                color: Color::WHITE,
-                font: assets.load("fonts/ZillaSlab-Medium.ttf"),
-                font_size: 25.0,
-                ..default()
-            },
-        ),
-        Name::new("Exit Text"),
-    );
+    let txt = |txt: &str, font_size: f32, name: &str| -> (TextBundle, Name) {
+        (
+            TextBundle::from_section(
+                txt.to_string(),
+                TextStyle {
+                    color: Color::WHITE,
+                    font: assets.load("fonts/ZillaSlab-Medium.ttf"),
+                    font_size,
+                },
+            ),
+            Name::new(name.to_string()),
+        )
+    };
 
     // container
-    cmds.spawn(menu)
+    cmds.spawn(menu_container)
         // "Paused" txt
         .with_children(|menu_parent| {
-            menu_parent.spawn(menu_txt);
+            menu_parent.spawn(txt("Paused", 40.0, "Paused Text"));
         })
         // Resume Btn
         .with_children(|menu_parent| {
             menu_parent
-                .spawn(resume_btn)
+                .spawn((btn("Resume Button"), ResumeBtn))
                 .with_children(|resume_btn_parent| {
-                    resume_btn_parent.spawn(resume_txt);
+                    resume_btn_parent.spawn(txt("resume - start", 25.0, "Resume Text"));
                 });
         })
         // Exit Btn
         .with_children(|menu_parent| {
             menu_parent
-                .spawn(exit_btn)
+                .spawn((btn("Exit Button"), ExitBtn))
                 .with_children(|exit_btn_parent| {
-                    exit_btn_parent.spawn(exit_txt);
+                    exit_btn_parent.spawn(txt("exit - x", 25.0, "Exit Text"));
                 });
         });
 }
 
 pub fn resume(mut cmds: Commands, mut interact_q: Query<&Interaction, With<ResumeBtn>>) {
+    // mouse click
     for interaction in &mut interact_q {
         match *interaction {
             Interaction::Clicked => cmds.insert_resource(NextState(Some(GameState::Running))),
@@ -135,7 +98,13 @@ pub fn resume(mut cmds: Commands, mut interact_q: Query<&Interaction, With<Resum
     }
 }
 
-pub fn exit(mut cmds: Commands, mut interact_q: Query<&Interaction, With<ExitBtn>>) {
+pub fn exit(
+    mut cmds: Commands,
+    mut interact_q: Query<&Interaction, With<ExitBtn>>,
+    btns: Res<Input<GamepadButton>>,
+    my_gamepad: Option<Res<MyGamepad>>,
+) {
+    // mouse click
     for interaction in &mut interact_q {
         match *interaction {
             Interaction::Clicked => {
@@ -144,6 +113,41 @@ pub fn exit(mut cmds: Commands, mut interact_q: Query<&Interaction, With<ExitBtn
             }
             Interaction::Hovered => (),
             _ => (),
+        }
+    }
+
+    // gamepad
+    let gamepad_input = my_gamepad
+        .map(|gp| btns.just_pressed(GamepadButton::new(gp.gamepad, GamepadButtonType::West)))
+        .unwrap_or(false);
+
+    if gamepad_input {
+        cmds.insert_resource(NextState(Some(AppState::MainMenu)));
+        cmds.insert_resource(NextState(Some(GameState::Running)));
+    }
+}
+
+pub fn toggle_menu(
+    mut cmds: Commands,
+    btns: Res<Input<GamepadButton>>,
+    my_gamepad: Option<Res<MyGamepad>>,
+    keys: Res<Input<KeyCode>>,
+    game_state: Res<State<GameState>>,
+) {
+    let gamepad_input = my_gamepad
+        .map(|gp| btns.just_pressed(GamepadButton::new(gp.gamepad, GamepadButtonType::Start)))
+        .unwrap_or(false);
+
+    let keys_input = keys.just_pressed(KeyCode::Escape);
+
+    if keys_input || gamepad_input {
+        if game_state.0 == GameState::Running {
+            cmds.insert_resource(NextState(Some(GameState::Paused)));
+            // println!("GameState: Paused");
+        }
+        if game_state.0 == GameState::Paused {
+            cmds.insert_resource(NextState(Some(GameState::Running)));
+            // println!("GameState: Running");
         }
     }
 }

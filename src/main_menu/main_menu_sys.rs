@@ -1,32 +1,7 @@
 use bevy::prelude::*;
 
-use crate::{
-    game::{gamepad::gamepad_rcs::MyGamepad, GameState},
-    AppState,
-};
-
 use super::main_menu_cmps::{MainMenu, MainMenuCamera};
-
-pub fn to_main_menu_state(
-    mut cmds: Commands,
-    keys: Res<Input<KeyCode>>,
-    btns: Res<Input<GamepadButton>>,
-    app_state: Res<State<AppState>>,
-    my_gamepad: Option<Res<MyGamepad>>,
-) {
-    let gamepad_input = my_gamepad
-        .map(|gp| btns.just_pressed(GamepadButton::new(gp.gamepad, GamepadButtonType::West)))
-        .unwrap_or(false);
-
-    let keys_input = keys.just_pressed(KeyCode::Escape);
-
-    if gamepad_input || keys_input {
-        if app_state.0 != AppState::MainMenu {
-            cmds.insert_resource(NextState(Some(AppState::MainMenu)));
-            cmds.insert_resource(NextState(Some(GameState::Running)));
-        }
-    }
-}
+use crate::{game::gamepad::gamepad_rcs::MyGamepad, AppState};
 
 pub fn to_game_state(
     mut cmds: Commands,
