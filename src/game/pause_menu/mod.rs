@@ -14,7 +14,16 @@ impl Plugin for PauseMenuPlugin {
         app.add_system(
             spawn
                 .in_schedule(OnEnter(GameState::Paused))
-                .run_if(|state: Res<State<AppState>>| state.0 == AppState::Game),
+                .run_if(|s: Res<State<AppState>>| s.0 == AppState::Game),
+        )
+        .add_system(
+            resume
+                .in_set(OnUpdate(AppState::Game))
+                .in_set(OnUpdate(GameState::Paused)),
+        )
+        .add_system(
+            exit.in_set(OnUpdate(AppState::Game))
+                .in_set(OnUpdate(GameState::Paused)),
         )
         .add_system(despawn.in_schedule(OnExit(GameState::Paused)));
     }

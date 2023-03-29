@@ -13,7 +13,7 @@ pub fn toggle_game_state(
         .map(|gp| btns.just_pressed(GamepadButton::new(gp.gamepad, Start)))
         .unwrap_or(false);
 
-    let keys_input = keys.just_pressed(KeyCode::Space);
+    let keys_input = keys.just_pressed(KeyCode::Escape);
 
     if keys_input || gamepad_input {
         if game_state.0 == GameState::Running {
