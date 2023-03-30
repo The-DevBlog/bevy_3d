@@ -4,10 +4,10 @@ use super::main_menu_cmps::{MainMenu, MainMenuCamera};
 use crate::{game::gamepad::gamepad_rcs::MyGamepad, AppState};
 
 pub fn to_game_state(
-    mut cmds: Commands,
     keys: Res<Input<KeyCode>>,
     btns: Res<Input<GamepadButton>>,
-    app_state: Res<State<AppState>>,
+    cur_app_state: Res<State<AppState>>,
+    mut next_app_state: ResMut<NextState<AppState>>,
     my_gamepad: Option<Res<MyGamepad>>,
 ) {
     let gamepad_input = my_gamepad
@@ -17,8 +17,8 @@ pub fn to_game_state(
     let keys_input = keys.just_pressed(KeyCode::G);
 
     if gamepad_input || keys_input {
-        if app_state.0 != AppState::Game {
-            cmds.insert_resource(NextState(Some(AppState::Game)));
+        if cur_app_state.0 != AppState::Game {
+            next_app_state.set(AppState::Game);
         }
     }
 }
@@ -73,10 +73,13 @@ pub fn spawn(mut cmds: Commands, assets: Res<AssetServer>) {
     });
 }
 
-pub fn select(mut cmds: Commands, mut interact_q: Query<&Interaction, With<Button>>) {
+pub fn select(
+    mut interact_q: Query<&Interaction, With<Button>>,
+    mut next_app_state: ResMut<NextState<AppState>>,
+) {
     for interaction in &mut interact_q {
         match *interaction {
-            Interaction::Clicked => cmds.insert_resource(NextState(Some(AppState::Game))),
+            Interaction::Clicked => next_app_state.set(AppState::Game),
             Interaction::Hovered => (),
             _ => (),
         }

@@ -87,11 +87,14 @@ pub fn spawn(mut cmds: Commands, assets: Res<AssetServer>) {
         });
 }
 
-pub fn resume(mut cmds: Commands, mut interact_q: Query<&Interaction, With<ResumeBtn>>) {
+pub fn resume(
+    mut interact_q: Query<&Interaction, With<ResumeBtn>>,
+    mut next_game_state: ResMut<NextState<GameState>>,
+) {
     // mouse click
     for interaction in &mut interact_q {
         match *interaction {
-            Interaction::Clicked => cmds.insert_resource(NextState(Some(GameState::Running))),
+            Interaction::Clicked => next_game_state.set(GameState::Running),
             Interaction::Hovered => (),
             _ => (),
         }
@@ -99,17 +102,18 @@ pub fn resume(mut cmds: Commands, mut interact_q: Query<&Interaction, With<Resum
 }
 
 pub fn exit(
-    mut cmds: Commands,
     mut interact_q: Query<&Interaction, With<ExitBtn>>,
     btns: Res<Input<GamepadButton>>,
     my_gamepad: Option<Res<MyGamepad>>,
+    mut next_game_state: ResMut<NextState<GameState>>,
+    mut next_app_state: ResMut<NextState<AppState>>,
 ) {
     // mouse click
     for interaction in &mut interact_q {
         match *interaction {
             Interaction::Clicked => {
-                cmds.insert_resource(NextState(Some(AppState::MainMenu)));
-                cmds.insert_resource(NextState(Some(GameState::Running)))
+                next_app_state.set(AppState::MainMenu);
+                next_game_state.set(GameState::Running);
             }
             Interaction::Hovered => (),
             _ => (),
@@ -122,17 +126,17 @@ pub fn exit(
         .unwrap_or(false);
 
     if gamepad_input {
-        cmds.insert_resource(NextState(Some(AppState::MainMenu)));
-        cmds.insert_resource(NextState(Some(GameState::Running)));
+        next_app_state.set(AppState::MainMenu);
+        next_game_state.set(GameState::Running);
     }
 }
 
 pub fn toggle_menu(
-    mut cmds: Commands,
     btns: Res<Input<GamepadButton>>,
     my_gamepad: Option<Res<MyGamepad>>,
     keys: Res<Input<KeyCode>>,
-    game_state: Res<State<GameState>>,
+    cur_game_state: Res<State<GameState>>,
+    mut next_game_state: ResMut<NextState<GameState>>,
 ) {
     let gamepad_input = my_gamepad
         .map(|gp| btns.just_pressed(GamepadButton::new(gp.gamepad, GamepadButtonType::Start)))
@@ -141,12 +145,12 @@ pub fn toggle_menu(
     let keys_input = keys.just_pressed(KeyCode::Escape);
 
     if keys_input || gamepad_input {
-        if game_state.0 == GameState::Running {
-            cmds.insert_resource(NextState(Some(GameState::Paused)));
+        if cur_game_state.0 == GameState::Running {
+            next_game_state.set(GameState::Paused);
             // println!("GameState: Paused");
         }
-        if game_state.0 == GameState::Paused {
-            cmds.insert_resource(NextState(Some(GameState::Running)));
+        if cur_game_state.0 == GameState::Paused {
+            next_game_state.set(GameState::Running);
             // println!("GameState: Running");
         }
     }
