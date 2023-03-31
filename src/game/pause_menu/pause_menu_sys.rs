@@ -55,7 +55,7 @@ pub fn spawn(mut cmds: Commands, assets: Res<AssetServer>) {
                 txt.to_string(),
                 TextStyle {
                     color: Color::WHITE,
-                    font: assets.load("fonts/ZillaSlab-Medium.ttf"),
+                    font: assets.load("fonts/FiraSans-Bold.ttf"),
                     font_size,
                 },
             ),
@@ -66,23 +66,35 @@ pub fn spawn(mut cmds: Commands, assets: Res<AssetServer>) {
     // container
     cmds.spawn(menu_container)
         // "Paused" txt
-        .with_children(|menu_parent| {
-            menu_parent.spawn(txt("Paused", 40.0, "Paused Text"));
+        .with_children(|parent| {
+            parent.spawn(txt("Paused", 40.0, "Paused Text"));
         })
         // Resume Btn
-        .with_children(|menu_parent| {
-            menu_parent
+        .with_children(|parent| {
+            parent
                 .spawn((btn("Resume Button"), PlayBtn))
-                .with_children(|resume_btn_parent| {
-                    resume_btn_parent.spawn(txt("resume - start", 25.0, "Resume Text"));
+                .with_children(|parent| {
+                    parent.spawn(txt("resume - start", 25.0, "Resume Text"));
                 });
         })
         // Exit Btn
-        .with_children(|menu_parent| {
-            menu_parent
+        .with_children(|parent| {
+            parent
                 .spawn((btn("Exit Button"), ExitBtn))
-                .with_children(|exit_btn_parent| {
-                    exit_btn_parent.spawn(txt("exit - x", 25.0, "Exit Text"));
+                .with_children(|parent| {
+                    parent.spawn(txt("exit", 25.0, "Exit Text"));
+                    parent.spawn((
+                        ImageBundle {
+                            image: assets.load("imgs/xButton.png").into(),
+                            style: Style {
+                                size: Size::width(Val::Px(37.0)),
+                                margin: UiRect::left(Val::Px(15.0)),
+                                ..default()
+                            },
+                            ..default()
+                        },
+                        Name::new("X Button Img".to_string()),
+                    ));
                 });
         });
 }

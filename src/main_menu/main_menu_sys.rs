@@ -69,7 +69,7 @@ pub fn spawn(mut cmds: Commands, assets: Res<AssetServer>) {
                         "Play",
                         TextStyle {
                             color: Color::WHITE,
-                            font: assets.load("fonts/ZillaSlab-Medium.ttf"),
+                            font: assets.load("fonts/FiraSans-Bold.ttf"),
                             font_size: 40.0,
                             ..default()
                         },
