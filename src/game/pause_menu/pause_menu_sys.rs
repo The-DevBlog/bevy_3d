@@ -35,14 +35,13 @@ pub fn spawn(mut cmds: Commands, assets: Res<AssetServer>) {
     let btn = |name: &str| -> (ButtonBundle, Name) {
         (
             ButtonBundle {
+                background_color: Color::GRAY.into(),
                 style: Style {
                     size: Size::new(Val::Px(150.0), Val::Px(60.0)),
                     justify_content: JustifyContent::Center,
                     align_items: AlignItems::Center,
                     ..default()
                 },
-
-                background_color: Color::GRAY.into(),
                 ..default()
             },
             Name::new(name.to_string()),

@@ -16,13 +16,9 @@ impl Plugin for PauseMenuPlugin {
                 .in_schedule(OnEnter(GameState::Paused))
                 .run_if(|s: Res<State<AppState>>| s.0 == AppState::Game),
         )
-        .add_system(
-            resume
+        .add_systems(
+            (resume, exit)
                 .in_set(OnUpdate(AppState::Game))
-                .in_set(OnUpdate(GameState::Paused)),
-        )
-        .add_system(
-            exit.in_set(OnUpdate(AppState::Game))
                 .in_set(OnUpdate(GameState::Paused)),
         )
         .add_system(toggle_menu.run_if(in_state(AppState::Game)))
