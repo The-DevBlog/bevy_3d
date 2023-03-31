@@ -1,8 +1,9 @@
 use bevy::prelude::*;
 
-use super::pause_menu_cmps::{ExitBtn, PauseMenu, ResumeBtn};
+use super::pause_menu_cmps::PauseMenu;
 use crate::{
     game::{gamepad::gamepad_rcs::MyGamepad, GameState},
+    ui::ui_cmps::{ExitBtn, PlayBtn},
     AppState,
 };
 
@@ -71,7 +72,7 @@ pub fn spawn(mut cmds: Commands, assets: Res<AssetServer>) {
         // Resume Btn
         .with_children(|menu_parent| {
             menu_parent
-                .spawn((btn("Resume Button"), ResumeBtn))
+                .spawn((btn("Resume Button"), PlayBtn))
                 .with_children(|resume_btn_parent| {
                     resume_btn_parent.spawn(txt("resume - start", 25.0, "Resume Text"));
                 });
@@ -87,7 +88,7 @@ pub fn spawn(mut cmds: Commands, assets: Res<AssetServer>) {
 }
 
 pub fn resume(
-    mut interact_q: Query<&Interaction, With<ResumeBtn>>,
+    mut interact_q: Query<&Interaction, With<PlayBtn>>,
     mut next_game_state: ResMut<NextState<GameState>>,
 ) {
     // mouse click

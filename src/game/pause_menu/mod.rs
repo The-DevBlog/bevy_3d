@@ -4,7 +4,7 @@ mod pause_menu_cmps;
 mod pause_menu_sys;
 
 use super::GameState;
-use crate::AppState;
+use crate::{ui::ui_sys::select, AppState};
 use pause_menu_sys::*;
 
 pub struct PauseMenuPlugin;
@@ -22,6 +22,7 @@ impl Plugin for PauseMenuPlugin {
                 .in_set(OnUpdate(GameState::Paused)),
         )
         .add_system(toggle_menu.run_if(in_state(AppState::Game)))
-        .add_system(despawn.in_schedule(OnExit(GameState::Paused)));
+        .add_system(despawn.in_schedule(OnExit(GameState::Paused)))
+        .add_system(select.in_set(OnUpdate(GameState::Paused)));
     }
 }

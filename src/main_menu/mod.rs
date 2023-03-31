@@ -1,8 +1,9 @@
 use bevy::prelude::*;
 
 mod main_menu_cmps;
-mod main_menu_sys;
+pub mod main_menu_sys;
 
+use crate::ui::ui_sys::select;
 use crate::AppState;
 use main_menu_sys::*;
 
