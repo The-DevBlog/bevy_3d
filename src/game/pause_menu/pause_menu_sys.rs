@@ -3,7 +3,7 @@ use bevy::prelude::*;
 use super::pause_menu_cmps::PauseMenu;
 use crate::{
     game::{gamepad::gamepad_rcs::MyGamepad, GameState},
-    ui::ui_cmps::{ExitBtn, PlayBtn},
+    ui::ui_cmps::{ExitBtn, PlayBtn, SaveBtn},
     AppState,
 };
 
@@ -77,6 +77,14 @@ pub fn spawn(mut cmds: Commands, assets: Res<AssetServer>) {
                     parent.spawn(txt("resume - start", 25.0, "Resume Text"));
                 });
         })
+        // Save Btn
+        .with_children(|parent| {
+            parent
+                .spawn((btn("Save Button"), SaveBtn))
+                .with_children(|parent| {
+                    parent.spawn(txt("Save - Y", 25.0, "Save Text"));
+                });
+        })
         // Exit Btn
         .with_children(|parent| {
             parent
@@ -111,6 +119,11 @@ pub fn resume(
             _ => (),
         }
     }
+}
+
+pub fn save(world: &mut World) {
+    let mut scene_world = World::new();
+    // let mut
 }
 
 pub fn exit(

@@ -5,10 +5,12 @@ use crate::{
     AppState,
 };
 
+use super::ui_cmps::PlayBtn;
+
 pub fn select(
     mut interact_q: Query<
         (&Interaction, &mut BackgroundColor),
-        (Changed<Interaction>, With<Button>),
+        (Changed<Interaction>, With<PlayBtn>),
     >,
     mut next_app_state: ResMut<NextState<AppState>>,
 ) {
