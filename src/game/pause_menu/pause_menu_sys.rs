@@ -1,8 +1,16 @@
-use bevy::prelude::*;
+use std::{fs::File, io::Write};
+
+use bevy::{prelude::*, tasks::IoTaskPool};
 
 use super::pause_menu_cmps::PauseMenu;
 use crate::{
-    game::{gamepad::gamepad_rcs::MyGamepad, GameState},
+    game::{
+        camera::camera_cmps::OrbitCamera,
+        gamepad::gamepad_rcs::MyGamepad,
+        player::player_cmps::{Player, Speed},
+        world::world_cmps::MyWorld,
+        GameState,
+    },
     ui::ui_cmps::{ExitBtn, PlayBtn, SaveBtn},
     AppState,
 };
@@ -121,9 +129,40 @@ pub fn resume(
     }
 }
 
-pub fn save(world: &mut World) {
-    let mut scene_world = World::new();
-    // let mut
+pub fn save(world: &mut World, mut interact_q: Query<&Interaction, With<SaveBtn>>) {
+    // mouse click
+    for interaction in &mut interact_q {
+        match *interaction {
+            Interaction::Clicked => {
+                println!("SAVED GAME");
+                let mut scene_world = World::new();
+
+                let cam = OrbitCamera::from_world(world);
+                let player = Player::from_world(world);
+                let speed = Speed::from_world(world);
+                let my_world = MyWorld::from_world(world);
+
+                scene_world.spawn((cam, player, speed, my_world));
+
+                let type_registry = world.resource::<AppTypeRegistry>();
+                let scene = DynamicScene::from_world(&scene_world, type_registry);
+                let serialized_scene = scene.serialize_ron(type_registry).unwrap();
+
+                info!("{}", serialized_scene);
+
+                #[cfg(not(target_arch = "wasm32"))]
+                IoTaskPool::get()
+                    .spawn(async move {
+                        // Write the scene RON data to file
+                        File::create(format!("assets/scenes/my_scene.scn.ron"))
+                            .and_then(|mut file| file.write(serialized_scene.as_bytes()))
+                            .expect("Error while writing scene to file");
+                    })
+                    .detach();
+            }
+            _ => (),
+        }
+    }
 }
 
 pub fn exit(

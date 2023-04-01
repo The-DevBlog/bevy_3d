@@ -1,7 +1,9 @@
 use bevy::prelude::*;
 
-#[derive(Component)]
+#[derive(Component, Reflect, Default)]
+#[reflect(Component)]
 pub struct Player;
 
-#[derive(Component)]
+#[derive(Component, Reflect, Default)]
+#[reflect(Component)]
 pub struct Speed(pub f32);
